@@ -7,7 +7,11 @@ class Armijo:
         self.alpha_s = alpha_s
         self.theta = theta
     def __call__(self, f, fd, x, d):
-        return 0.001
+        alpha = self.alpha_s
+        while f(x + alpha * d) > f(x) + self.e * alpha * np.dot(fd(x), d):
+            alpha *= self.theta
+
+        return alpha
 
 
 
@@ -52,6 +56,6 @@ def df(u):
     return np.array([2 * (x + 0.3), 2 * (y - 0.7)])
 u0 = np.array([0, 0], dtype='float64')
 
-armijo = Armijo(0.3, 0.6, 0.9)
+armijo = Armijo(0.9, 1, 0.5)
 
 condgrad(f=f, df=df, one_dim_method=armijo, A_ub=A_ub, b_ub=b_ub, u0=u0)

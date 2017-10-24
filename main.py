@@ -16,11 +16,11 @@ class Armijo:
 
 
 
-def condgrad(u0, f, df, one_dim_method, A_ub=None, b_ub=None, A_eq=None, b_eq=None):
+def condgrad(u0, f, df, one_dim_method, eps_stop, A_ub=None, b_ub=None, A_eq=None, b_eq=None):
     print(u0)
     bnd = [(None, None)] * u0.size
 
-    for i in range(10000):
+    while np.linalg.norm(df(u0)) > eps_stop:
         #print('step: ' + str(i))
         c = df(u0)
         #print(c)
@@ -58,4 +58,4 @@ u0 = np.array([0, 0], dtype='float64')
 
 armijo = Armijo(0.9, 1, 0.5)
 
-condgrad(f=f, df=df, one_dim_method=armijo, A_ub=A_ub, b_ub=b_ub, u0=u0)
+condgrad(f=f, df=df, one_dim_method=armijo, eps_stop=0.00001, A_ub=A_ub, b_ub=b_ub, u0=u0)

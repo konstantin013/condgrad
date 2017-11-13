@@ -40,31 +40,44 @@ def condgrad(u0, f, df, one_dim_method, eps_stop, A_ub=None, b_ub=None, A_eq=Non
     return u0
 
 #this is our constrains
-#this is square { (1,1), (1,-1), (-1,-1), (-1,1)}
-A_ub = np.array([[1, 0],
-                 [-1, 0],
-                 [0, 1],
-                 [0, -1]], dtype='float64')
-b_ub = np.array([1, 1, 1, 1], dtype='float64')
+#this is square { (1,2), (1,2), (1,2), (1,2), (1,2)}
+
+
+
+A_ub = np.zeros((10, 5))
+b_ub = np.zeros(10)
+for i in range(5):
+    A_ub[2 * i][i] = 1
+    A_ub[2 * i + 1][i] = -1
+    b_ub[2 * i] = 2
+    b_ub[2 * i + 1] = -1
+print(b_ub)
 
 
 #this is test function
+
 def f(u):
-    x = u[0]
-    y = u[1]
-    return (x + 4) ** 2 + (y + 6) ** 2
+    ans = 100 * (u[1] - 2 * u[0]) ** 2
+    ans += 100 * (u[2] - 3 * u[0]) ** 2
+    ans += 100 * (u[3] - 4 * u[0]) ** 2
+    ans += 100 * (u[4] - 5 * u[0]) ** 2
+    ans += (u[0] - 2) ** 2
+    return ans
 
 #and this is its gradient
+
 def df(u):
-    x = u[0]
-    y = u[1]
-    return np.array([2 * (x + 4), 2 * (y + 6)])
+    return np.array([100 * 2 * 2 * (2 * u[0] - u[1]) + 100 * 2 * 3 * (3 * u[0] - u[2]) + 100 * 4 * 2 * (4 * u[0] - u[3]) + 100 * 5 * 2 * (5 * u[0] - u[4]) + 2 * (u[0] - 2),
+                     100 * 2 * (u[1] - 2 * u[0]),
+                     100 * 2 * (u[2] - 3 * u[0]),
+                     100 * 2 * (u[3] - 4 * u[0]),
+                     100 * 2 * (u[4] - 5 * u[0])])
 
 #set start point
-u0 = np.array([0, 0], dtype='float64')
+u0 = np.array([1, 1, 1, 1, 1], dtype='float64')
 
 #set paramethers for Armijo rule
 
 armijo = Armijo(0.99, 1, 0.5)
 
-condgrad(f=f, df=df, one_dim_method=armijo, eps_stop=0.0000000001, A_ub=A_ub, b_ub=b_ub, u0=u0)
+condgrad(f=f, df=df, one_dim_method=armijo, eps_stop=0.00000001, A_ub=A_ub, b_ub=b_ub, u0=u0)
